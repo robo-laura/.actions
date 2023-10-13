@@ -59,6 +59,7 @@ jobs:
         id: docker-image
         run: |
           BRANCH_NAME=${{ inputs.github_ref_name }}
+          BRANCH_NAME=$(echo $BRANCH_NAME | tr '/' '_')
           IMAGE_NAME=${BRANCH_NAME}_${{ inputs.github_sha }}
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_OUTPUT
       - name: Extract repository name
