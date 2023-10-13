@@ -58,7 +58,7 @@ jobs:
       - name: Create docker image name
         id: docker-image
         run: |
-          BRANCH_NAME=${{ inputs.ref_name }}
+          BRANCH_NAME=${{ inputs.github_ref_name }}
           IMAGE_NAME=${BRANCH_NAME}_${{ inputs.github_sha }}
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_OUTPUT
       - name: Extract repository name
@@ -128,5 +128,5 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git pull origin pre-deployment
           git add .
-          git commit -m "${{ github.ref_name }}"
+          git commit -m "${{ inputs.github_ref_name }}"
           git push origin pre-deployment
