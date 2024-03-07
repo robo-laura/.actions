@@ -47,6 +47,17 @@ on:
         description: "URL to helm repository"
         required: true
         type: string
+      helm_version_path:
+        description: "Specifies the path to VERSION_HELM file"
+        default: "./VERSION_HELM"
+        required: false
+        type: string
+      version_path:
+        description: "Specifies the path to VERSION file"
+        default: "./VERSION"
+        required: false
+        type: string
+
     secrets:
       DOCKERHUB_USERNAME:
         required: true
@@ -97,7 +108,8 @@ jobs:
       - name: Update Yaml Files
         run: |
           helm_folder="${{ inputs.helm_context }}"
-          version_helm="$(cat VERSION_HELM)"
+          version_helm="$(cat ${{ inputs.helm_version_path }})"
+          version="$(cat ${{ inputs.version_path }})"
           run_number="${{ inputs.github_run_number }}"
           image_name="${{ steps.docker-image.outputs.IMAGE_NAME }}"
           image_digest="${{ steps.image-digest.outputs.IMAGE_DIGEST }}"
@@ -105,7 +117,7 @@ jobs:
           repo_name="${{ steps.extract-repository-name.outputs.REPO_NAME }}"
 
           yq -i ".version = \"${version_helm}.${run_number}\"" "./${helm_folder}/Chart.yaml"
-          yq -i ".appVersion = \"$(cat VERSION)\"" "./${helm_folder}/Chart.yaml"
+          yq -i ".appVersion = \"${version}\"" "./${helm_folder}/Chart.yaml"
 
           yq -i '.image.repository = "'"${account}/${repo_name}"'"' "./${helm_folder}/values.yaml"
           yq -i '.image.tag = "'"${image_name}@${image_digest}"'"' "./${helm_folder}/values.yaml"
